@@ -38,4 +38,12 @@ class Game
     end
     string
   end
+
+  def match?(guess, answer)
+    m = 0
+    guess.each_with_index do |v, i|
+      if guess[i] == answer[i] {m += 1}
+    end
+    m
+  end
 end
