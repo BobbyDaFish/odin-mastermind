@@ -7,7 +7,7 @@ class Game
   def self.display_board(board, results)
     i = 1
     12.times do
-      puts board[i], ' | ', results[i]
+      puts [board[i]], ' | ', [results[i]]
       i += 1
     end
   end
