@@ -1,5 +1,5 @@
 # frozen-string-literal: true
-
+require 'pry-byebug'
 # Contains the game methods for use in the game. Some will have increased privacy to prevent the
 # user from accessing the winning code
 class Game
@@ -7,7 +7,7 @@ class Game
   def self.display_board(board, results)
     i = 1
     12.times do
-      puts [board[i]], ' | ', [results[i]]
+      puts board[i].join(',') + ' | ' + results[i].join(',')
       i += 1
     end
   end
@@ -78,9 +78,7 @@ scoreboard = Hash.new([' ', ' ', ' ', ' '])
 results = Hash.new([0, 0])
 round = 1
 win = false
-
 # begin game
-Game.new
 answer = Game.generate_answer
 while win == false || round <= 12
   Game.display_board(scoreboard, results)
