@@ -3,9 +3,8 @@
 # Contains the game methods for use in the game. Some will have increased privacy to prevent the
 # user from accessing the winning code
 class Game
-
   # show the board so far.
-  def display_board(board, results)
+  def self.display_board(board, results)
     i = 1
     12.times do
       puts board[i], ' | ', results[i]
@@ -14,32 +13,32 @@ class Game
   end
 
   # get an array of decoder guesses
-  def decoder_submit(round)
+  def self.decoder_submit(round)
     g = []
     i = 1
     puts "Round #{round}.\nChoose from the following: R = red, O = orange, Y = Yellow, G = green, B = blue, P = purple"
     4.times do
       puts "What color do you choose for color #{i}"
-      entry = gets.chop
-      entry_checker(entry)
-      g << entry
+      entry = gets.chop.upcase
+      g << entry_checker(entry)
+      i += 1
     end
     g
   end
 
   # make sure each entry is valid.
-  def entry_checker(string)
+  def self.entry_checker(string)
     colors = %w[R O Y G B P]
     unless colors.any?(string)
       puts 'Invalid choice.'
       puts 'Please Choose from the following: R = red, O = orange, Y = Yellow, G = green, B = blue, P = purple'
-      string = gets.chop
+      string = gets.chop.upcase
     end
     string
   end
 
   # check each item in the guess array to see whether each index exactly matches the answer
-  def match?(guess, answer)
+  def self.match?(guess, answer)
     m = 0
     guess.each_with_index do |v, i|
       next unless v == answer[i]
@@ -53,7 +52,7 @@ class Game
   end
 
   # find and return values that are present in answer, but in a different position.
-  def close_match?(guess, answer)
+  def self.close_match?(guess, answer)
     c = 0
     guess.each_with_index do |v, i|
       next unless answer.any?(v)
@@ -65,7 +64,7 @@ class Game
     c
   end
 
-  def generate_answer
+  def self.generate_answer
     a = []
     colors = %w[R O Y G B P]
     4.times do
@@ -81,6 +80,7 @@ round = 1
 win = false
 
 # begin game
+Game.new
 answer = Game.generate_answer
 while win == false || round <= 12
   Game.display_board(scoreboard, results)
