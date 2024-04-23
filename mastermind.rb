@@ -40,14 +40,16 @@ class Game
   # check each item in the guess array to see whether each index exactly matches the answer
   def self.match?(guess, answer)
     m = 0
-    guess.each_with_index do |v, i|
-      next unless v == answer[i]
+    g = guess
+    a = answer
+    g.each_with_index do |v, i|
+      next unless v == a[i]
 
       m += 1
-      answer.delete_at(i)
-      guess.delete_at(i)
+      a = a.delete_at(i)
+      g = g.delete_at(i)
     end
-    c = close_match?(guess, answer)
+    c = close_match?(g, a)
     [m, c]
   end
 
