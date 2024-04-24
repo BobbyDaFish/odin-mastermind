@@ -125,6 +125,7 @@ class Game
     elsif @round == 12
       puts 'No guesses remain, decoder loses!'
       display_board
+      puts "The answer was #{@answer}"
       true
     else
       @round += 1
