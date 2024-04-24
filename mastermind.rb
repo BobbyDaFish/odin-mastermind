@@ -1,7 +1,6 @@
 # frozen-string-literal: true
 
-# Contains the game methods for use in the game. Some will have increased privacy to prevent the
-# user from accessing the winning code
+# Methods for the mastermind game, and variables for instantiation.
 class Game
   def initialize
     @scoreboard = Hash.new([' ', ' ', ' ', ' '])
