@@ -1,5 +1,5 @@
 # frozen-string-literal: true
-require 'pry-byebug'
+
 # Contains the game methods for use in the game. Some will have increased privacy to prevent the
 # user from accessing the winning code
 class Game
@@ -16,7 +16,7 @@ class Game
     'New game!'
   end
 
-  # show the board so far.
+  # show the board.
   def display_board
     i = 0
     puts "-----Round #{@round}-----"
@@ -26,7 +26,6 @@ class Game
     end
   end
 
-  # get an array of decoder guesses
   def decoder_submit
     @scoreboard[@round - 1] = user_decoder if @role == '1'
     @scoreboard[@round - 1] = computer_decoder if @role == '2'
@@ -100,7 +99,7 @@ class Game
     c
   end
 
-  # process the array to prevent false positives, and ensure accurate counts
+  # process the array to prevent false positives, and ensure accurate result counts
   def match_process(guess, answer, index)
     answer.delete_at(index)
     guess.delete_at(index)
