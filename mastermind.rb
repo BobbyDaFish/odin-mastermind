@@ -40,14 +40,13 @@ class Game
   # check each item in the guess array to see whether each index exactly matches the answer
   def self.match?(guess, answer)
     m = 0
-    g = guess
-    a = answer
+    g = guess.flatten
+    a = answer.flatten
     g.each_with_index do |v, i|
       next unless v == a[i]
 
       m += 1
-      a = a.delete_at(i)
-      g = g.delete_at(i)
+      match_process(g, a)
     end
     c = close_match?(g, a)
     [m, c]
@@ -64,6 +63,14 @@ class Game
       c += 1
     end
     c
+  end
+
+  # process the array to prevent false positives, and ensure accurate counts
+  def match_process(guess, answer)
+    answer.delete_at(i)
+    guess.delete_at(i)
+    answer.unshift(' ')
+    guess.unshift('_')
   end
 
   def self.generate_answer
