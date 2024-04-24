@@ -3,31 +3,42 @@ require 'pry-byebug'
 # Contains the game methods for use in the game. Some will have increased privacy to prevent the
 # user from accessing the winning code
 class Game
+  def initialize
+    @scoreboard = Hash.new([' ', ' ', ' ', ' '])
+    @results = Hash.new([0, 0])
+    @answer = Game.generate_answer
+    @round = 1
+  end
+
+  def inspect
+    'New game!'
+  end
+
   # show the board so far.
-  def self.display_board(board, results)
+  def display_board
     i = 1
     12.times do
-      puts "#{board[i].join(',')} | #{results[i].join(',')}"
+      puts "#{@scoreboard[i].join(',')} | #{@results[i].join(',')}"
       i += 1
     end
   end
 
   # get an array of decoder guesses
-  def self.decoder_submit(round)
+  def decoder_submit
     g = []
     i = 1
-    puts "Round #{round}.\nChoose from the following: R = red, O = orange, Y = Yellow, G = green, B = blue, P = purple"
+    puts "Round #{@round}.\nChoose from the following: R = red, O = orange, Y = Yellow, G = green, B = blue, P = purple"
     4.times do
       puts "What color do you choose for color #{i}"
       entry = gets.chop.upcase
       g << entry_checker(entry)
       i += 1
     end
-    g
+    @scoreboard[@round] = g
   end
 
   # make sure each entry is valid.
-  def self.entry_checker(string)
+  def entry_checker(string)
     colors = %w[R O Y G B P]
     unless colors.any?(string)
       puts 'Invalid choice.'
@@ -38,10 +49,10 @@ class Game
   end
 
   # check each item in the guess array to see whether each index exactly matches the answer
-  def self.match?(guess, answer)
+  def match?
     m = 0
-    g = guess.flatten
-    a = answer.flatten
+    g = @scoreboard[@round].flatten
+    a = @answer.flatten
     g.each_with_index do |v, i|
       next unless v == a[i]
 
@@ -49,11 +60,11 @@ class Game
       match_process(g, a, i)
     end
     c = close_match?(g, a)
-    [m, c]
+    @results[@round] = [m, c]
   end
 
   # find and return values that are present in answer, but in a different position.
-  def self.close_match?(guess, answer)
+  def close_match?(guess, answer)
     c = 0
     guess.each_with_index do |v, i|
       next unless answer.any?(v)
@@ -66,7 +77,7 @@ class Game
   end
 
   # process the array to prevent false positives, and ensure accurate counts
-  def self.match_process(guess, answer, index)
+  def match_process(guess, answer, index)
     answer.delete_at(index)
     guess.delete_at(index)
     answer.unshift(' ')
@@ -81,27 +92,28 @@ class Game
     end
     a
   end
+
+  def end_game?
+    if @scoreboard[@round] == @answer
+      puts 'You win!'
+      display_board
+      true
+    elsif @round == 12
+      puts 'No guesses remain, you lose!'
+      true
+    else
+      @round += 1
+    end
+  end
 end
 
-scoreboard = Hash.new([' ', ' ', ' ', ' '])
-results = Hash.new([0, 0])
-round = 1
-game_over = false
 # begin game
-answer = Game.generate_answer
-until game_over == true || round > 12
-  Game.display_board(scoreboard, results)
-  guess = Game.decoder_submit(round)
-  scoreboard[round] = guess
-  results[round] = Game.match?(guess, answer)
-  if guess == answer
-    game_over = true
-    puts 'You win!'
-    Game.display_board(scoreboard, results)
-  elsif round == 12
-    puts 'No guesses remain, you lose!'
-    game_over = true
-  else
-    round += 1
-  end
+start = Game.new
+game_over = false
+
+until game_over == true
+  start.display_board
+  start.decoder_submit
+  start.match?
+  game_over = start.end_game?
 end
