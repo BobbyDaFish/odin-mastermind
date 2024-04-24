@@ -10,6 +10,7 @@ class Game
     @round = 1
   end
 
+  # hide the answer
   def inspect
     'New game!'
   end
