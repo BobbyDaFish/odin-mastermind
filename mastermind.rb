@@ -7,7 +7,7 @@ class Game
   def self.display_board(board, results)
     i = 1
     12.times do
-      puts board[i].join(',') + ' | ' + results[i].join(',')
+      puts "#{board[i].join(',')} | #{results[i].join(',')}"
       i += 1
     end
   end
@@ -46,7 +46,7 @@ class Game
       next unless v == a[i]
 
       m += 1
-      match_process(g, a)
+      match_process(g, a, i)
     end
     c = close_match?(g, a)
     [m, c]
@@ -66,9 +66,9 @@ class Game
   end
 
   # process the array to prevent false positives, and ensure accurate counts
-  def match_process(guess, answer)
-    answer.delete_at(i)
-    guess.delete_at(i)
+  def self.match_process(guess, answer, index)
+    answer.delete_at(index)
+    guess.delete_at(index)
     answer.unshift(' ')
     guess.unshift('_')
   end
@@ -86,18 +86,21 @@ end
 scoreboard = Hash.new([' ', ' ', ' ', ' '])
 results = Hash.new([0, 0])
 round = 1
-win = false
+game_over = false
 # begin game
 answer = Game.generate_answer
-while win == false || round <= 12
+until game_over == true || round > 12
   Game.display_board(scoreboard, results)
   guess = Game.decoder_submit(round)
   scoreboard[round] = guess
   results[round] = Game.match?(guess, answer)
   if guess == answer
-    win = true
+    game_over = true
     puts 'You win!'
     Game.display_board(scoreboard, results)
+  elsif round == 12
+    puts 'No guesses remain, you lose!'
+    game_over = true
   else
     round += 1
   end
