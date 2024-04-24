@@ -8,6 +8,7 @@ class Game
     @results = Hash.new([0, 0])
     @answer = Game.generate_answer
     @round = 1
+    @role = choose_role
   end
 
   # hide the answer
@@ -17,7 +18,8 @@ class Game
 
   # show the board so far.
   def display_board
-    i = 1
+    i = 0
+    puts "-----Round #{@round}-----"
     12.times do
       puts "#{@scoreboard[i].join(',')} | #{@results[i].join(',')}"
       i += 1
@@ -26,16 +28,37 @@ class Game
 
   # get an array of decoder guesses
   def decoder_submit
+    @scoreboard[@round - 1] = user_decoder if @role == '1'
+    @scoreboard[@round - 1] = computer_decoder if @role == '2'
+  end
+
+  def computer_decoder
+    g = []
+    colors = %w[R O Y G B P]
+    if @round == 1
+      puts 'Create a code!'
+      @answer = user_decoder
+      g = Game.generate_answer
+    else
+      @scoreboard[@round - 2].each_with_index do |v, i|
+        g << v if v == @answer[i]
+        g << colors[rand(6)] if v != @answer[i]
+      end
+    end
+    g
+  end
+
+  def user_decoder
     g = []
     i = 1
-    puts "Round #{@round}.\nChoose from the following: R = red, O = orange, Y = Yellow, G = green, B = blue, P = purple"
+    puts 'Choose from the following: R = red, O = orange, Y = Yellow, G = green, B = blue, P = purple'
     4.times do
       puts "What color do you choose for color #{i}"
       entry = gets.chop.upcase
       g << entry_checker(entry)
       i += 1
     end
-    @scoreboard[@round] = g
+    g
   end
 
   # make sure each entry is valid.
@@ -52,7 +75,7 @@ class Game
   # check each item in the guess array to see whether each index exactly matches the answer
   def match?
     m = 0
-    g = @scoreboard[@round].flatten
+    g = @scoreboard[@round - 1].flatten
     a = @answer.flatten
     g.each_with_index do |v, i|
       next unless v == a[i]
@@ -61,7 +84,7 @@ class Game
       match_process(g, a, i)
     end
     c = close_match?(g, a)
-    @results[@round] = [m, c]
+    @results[@round - 1] = [m, c]
   end
 
   # find and return values that are present in answer, but in a different position.
@@ -95,16 +118,28 @@ class Game
   end
 
   def end_game?
-    if @scoreboard[@round] == @answer
-      puts 'You win!'
+    if @scoreboard[@round - 1] == @answer
+      puts 'Decoder wins!'
       display_board
       true
     elsif @round == 12
-      puts 'No guesses remain, you lose!'
+      puts 'No guesses remain, decoder loses!'
+      display_board
       true
     else
       @round += 1
     end
+  end
+
+  def choose_role
+    puts 'Choose your role.\n Enter 1 to try to guess a code, 2 to create a code for the computer to guess.'
+    r = gets.chop
+    unless %w[1 2].any?(r)
+      puts 'Invalid choice.'
+      puts 'Enter 1 to try to guess a code, 2 to create a code for the computer to guess.'
+      r = gets.chop
+    end
+    r
   end
 end
 
